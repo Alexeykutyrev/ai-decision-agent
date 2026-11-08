@@ -24,12 +24,14 @@ npm install
 cp .env.example .env.local
 ```
 
-Создайте ключ в [Kimi API Platform](https://platform.moonshot.ai/) и укажите его в `.env.local`:
+Основной вариант подключения — Vercel AI Gateway. Создайте ключ в разделе **AI Gateway → API Keys** и укажите его в `.env.local`:
 
 ```dotenv
-MOONSHOT_API_KEY=ваш_ключ
-AI_MODEL=kimi-k2.6
+AI_GATEWAY_API_KEY=ваш_ключ
+AI_MODEL=moonshotai/kimi-k2.6
 ```
+
+Для прямого подключения Kimi API вместо Gateway можно задать `MOONSHOT_API_KEY` и `AI_MODEL=kimi-k2.6`. Если заданы оба ключа, приоритет у AI Gateway.
 
 Запуск:
 
@@ -46,6 +48,7 @@ npm run dev -- --host 0.0.0.0 --port 7100
 ```bash
 npm run build
 npm run lint
+npm run test:ui
 ```
 
 ## Публикация на сайте
@@ -54,7 +57,7 @@ npm run lint
 
 1. Выполните `npm run build`.
 2. Синхронизируйте готовую страницу, ресурсы и API с основным проектом: `node tools/sync-to-swarm.mjs ../Swarm`.
-3. В настройках существующего Vercel-проекта добавьте `MOONSHOT_API_KEY` для Production. При необходимости задайте `AI_MODEL`; по умолчанию используется `kimi-k2.6`.
+3. В настройках существующего Vercel-проекта добавьте `AI_GATEWAY_API_KEY` для Production. По умолчанию используется `moonshotai/kimi-k2.6`; при необходимости выберите другую доступную модель через `AI_MODEL`.
 4. Опубликуйте сайт из `Swarm/dist/`: `vercel --prod`.
 5. Проверьте страницу и `/api/status` на основном домене.
 

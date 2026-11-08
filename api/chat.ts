@@ -57,8 +57,9 @@ function textResponse(upstream: Response) {
 export default {
   async fetch(request: Request) {
     if (request.method !== 'POST') return error('Метод не поддерживается', 405)
-    const apiKey = process.env.MOONSHOT_API_KEY
-    if (!apiKey) return error('Модель ещё не подключена: добавьте MOONSHOT_API_KEY в настройках окружения.', 503)
+    const gatewayKey = process.env.AI_GATEWAY_API_KEY
+    const apiKey = gatewayKey || process.env.MOONSHOT_API_KEY
+    if (!apiKey) return error('Модель ещё не подключена: добавьте AI_GATEWAY_API_KEY в настройках окружения.', 503)
 
     let body: { messages?: IncomingMessage[]; context?: Record<string, unknown> | null }
     try {
@@ -97,18 +98,18 @@ export default {
 
     let upstream: Response
     try {
-      upstream = await fetch('https://api.moonshot.ai/v1/chat/completions', {
+      upstream = await fetch(gatewayKey ? 'https://ai-gateway.vercel.sh/v1/chat/completions' : 'https://api.moonshot.ai/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: process.env.AI_MODEL || 'kimi-k2.6',
+          model: process.env.AI_MODEL || (gatewayKey ? 'moonshotai/kimi-k2.6' : 'kimi-k2.6'),
           messages: [{ role: 'system', content: system }, ...messages],
           stream: true,
           max_tokens: 4096,
-          thinking: { type: 'disabled' },
+          ...(gatewayKey ? {} : { thinking: { type: 'disabled' } }),
         }),
         signal: request.signal,
       })

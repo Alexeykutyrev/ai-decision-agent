@@ -44,6 +44,8 @@ function localApi(): Plugin {
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
+  if (env.AI_GATEWAY_API_KEY) process.env.AI_GATEWAY_API_KEY = env.AI_GATEWAY_API_KEY
+  else delete process.env.AI_GATEWAY_API_KEY
   if (env.MOONSHOT_API_KEY) process.env.MOONSHOT_API_KEY = env.MOONSHOT_API_KEY
   else delete process.env.MOONSHOT_API_KEY
   if (env.AI_MODEL) process.env.AI_MODEL = env.AI_MODEL
