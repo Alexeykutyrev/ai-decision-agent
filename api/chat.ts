@@ -1,5 +1,7 @@
 import { SYSTEM_PROMPT } from '../server/prompt'
 
+declare const process: { env: Record<string, string | undefined> }
+
 type IncomingMessage = {
   role?: string
   content?: string
